@@ -35,14 +35,14 @@ def plot_track(data_array):
 
     # Plot the track
     plt.figure(figsize=(10, 6))
-    plt.plot(longitudes, latitudes, marker='o', linestyle='-', color='b')
+    #plt.plot(longitudes, latitudes, marker='o', linestyle='-', color='b')
     plt.xlabel('Longitude')
     plt.ylabel('Latitude')
     plt.title('GPS Track')
     plt.grid(True)
 
     # Add color based on elevation
-    scatter = plt.scatter(longitudes, latitudes, c=elevations, cmap='viridis', marker='o')
+    scatter = plt.scatter(longitudes, latitudes, c=elevations, cmap='viridis', marker='.', linewidths=2)
     plt.colorbar(scatter, label='Elevation (m)')
 
     plt.show()
