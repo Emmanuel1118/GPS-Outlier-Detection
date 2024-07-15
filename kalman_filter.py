@@ -4,7 +4,7 @@ from scipy.stats import norm
 
 class KF:
 
-    def __init__(self, H, F, G, sigma_w, sigma_v, x_0, P_0):
+    def __init__(self, H, F, G, Q, R, x_0, P_0):
 
         """
         Initialize the Kalman Filter.
@@ -22,8 +22,8 @@ class KF:
         self.H = H
         self.F = F
         self.G = G
-        self.Q = sigma_w**2
-        self.R = sigma_v**2
+        self.Q = Q
+        self.R = R
         self.x = x_0
         self.P = P_0
     
