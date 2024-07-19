@@ -78,6 +78,9 @@ def lla2ned(data_array, lla0):
 
     Returns:
     ned (numpy array): Array of North, East, Down coordinates, and time.
+
+    Usage Example:
+    data_array_ned = lla2ned(data_array_lla, data_array[0, :3])
     """
     # extract origin latitude, longitude, and elevation
     lat0 = np.deg2rad(lla0[0])
@@ -112,6 +115,9 @@ def ned2lla(data_array_ned, lla0):
     
     Returns:
     lla (numpy array): Array of latitude, longitude, altitude, and time.
+
+    Usage Example:
+    data_array_lla = ned2lla(data_array_ned, data_array[0, :3])
     """
     # extract origin latitude, longitude, and elevation
     lat0 = np.deg2rad(lla0[0])
