@@ -55,16 +55,28 @@ def plot_track_ned(data_array): # curretlly basicaly the same as plot_track_lla
     D = data_array[:, 2].astype(float)
 
     # Plot the track
-    plt.figure(figsize=(10, 6))
-    plt.xlabel('East (m)')
-    plt.ylabel('North (m)')
-    plt.title('NED Track')
-    plt.grid(True)
+    fig = plt.figure(figsize=(12, 8))  # Slightly larger figure for better readability
+    ax = fig.add_subplot(111, projection='3d')
 
-    # Add color based on elevation
-    scatter = plt.scatter(E, N, c=D, cmap='viridis', marker='.', linewidths=2)
-    plt.colorbar(scatter, label='Altitude (m)')
+    # Set axis labels with better formatting
+    ax.set_xlabel('East (m)', fontsize=12, labelpad=10)
+    ax.set_ylabel('North (m)', fontsize=12, labelpad=10)
+    ax.set_zlabel('Height (m)', fontsize=12, labelpad=10)
 
+    # Set title
+    plt.title('NED Track', fontsize=15, pad=20)
+
+    # Enhance grid visibility
+    ax.grid(True, linestyle='--', linewidth=0.5, alpha=0.7)
+
+    # Customize scatter plot
+    scatter = ax.scatter3D(E, N, D, c=D, cmap='plasma', s=30, alpha=0.8)
+
+    # Add a color bar
+    cbar = plt.colorbar(scatter, ax=ax, pad=0.1)
+    cbar.set_label('Depth (m)', fontsize=12)
+
+    # Show the plot
     plt.show()
 
 
