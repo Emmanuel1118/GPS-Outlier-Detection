@@ -75,3 +75,16 @@ class KF:
         """
         #print(self.x.shape)
         return self.x  
+    
+    def update_system(self, F, G):
+
+        """
+        Update the system matrices F and G. for exemple if they are time depentent and the measurments have varying time diffrences.
+
+        Args:
+            F (np.ndarray): Updated state transition matrix.
+            G (np.ndarray): Updated noise transition matrix.
+        """
+
+        self.F = F
+        self.G = G
