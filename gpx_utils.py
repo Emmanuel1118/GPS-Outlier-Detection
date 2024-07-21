@@ -165,3 +165,27 @@ def ned2lla(data_array_ned, lla0):
     # stack LLA coordinates
     lla = np.column_stack((lat, lon, alt, data_array_ned[:, 3]))
     return lla
+
+def get_time_diff(data_array):
+    """
+    Calculate time differences between consecutive timestamps.
+
+    Parameters:
+    data_array (numpy array): Array where the 4th column contains datetime values as strings.
+
+    Returns:
+    numpy array: Array of time differences in seconds, with the first element as 0.
+
+    Usage Example:
+    time_diffs = get_time_diff(data_array)
+    """
+    # Convert the 4th column of data_array to datetime64 in seconds, then to integer timestamps
+    t = data_array[:, 3].astype('datetime64[s]').astype(int)
+    
+    # Compute the difference between consecutive timestamps
+    diff = np.diff(t)
+    
+    # Prepend a 0 to the beginning of the differences array to maintain the original length
+    diff = np.concatenate([[0], diff])
+    
+    return diff
