@@ -64,7 +64,7 @@ def plot_track_ned(data_array): # curretlly basicaly the same as plot_track_lla
     ax.set_zlabel('Height (m)', fontsize=12, labelpad=10)
 
     # Set title
-    plt.title('NED Track', fontsize=15, pad=20)
+    plt.title('NED Track 3D Reconstruction', fontsize=15, pad=20)
 
     # Enhance grid visibility
     ax.grid(True, linestyle='--', linewidth=0.5, alpha=0.7)
@@ -74,9 +74,22 @@ def plot_track_ned(data_array): # curretlly basicaly the same as plot_track_lla
 
     # Add a color bar
     cbar = plt.colorbar(scatter, ax=ax, pad=0.1)
-    cbar.set_label('Depth (m)', fontsize=12)
+    cbar.set_label('Altitude (m)', fontsize=12)
 
     # Show the plot
+    plt.show()
+
+    # Second Plot
+    plt.figure(figsize=(10, 6))
+    plt.xlabel('East (m)')
+    plt.ylabel('North (m)')
+    plt.title('NED Track 2D Reconstruction')
+    plt.grid(True)
+
+    # Add color based on elevation
+    scatter = plt.scatter(E, N, c=D, cmap='viridis', marker='.', linewidths=2)
+    plt.colorbar(scatter, label='Altitude (m)')
+
     plt.show()
 
 
