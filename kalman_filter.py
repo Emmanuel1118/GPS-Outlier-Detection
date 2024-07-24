@@ -37,13 +37,14 @@ class KF:
         # Predicted covariance estimate
         self.P = np.dot(np.dot(self.F, self.P), self.F.T) + np.dot(np.dot(self.G, self.Q), self.G.T)
     
-    def update(self, z):
+    def update(self, z, debug=False):
 
         """
         Update the state estimate with a new measurement.
 
         Args:
             z (np.ndarray): Measurement vector.
+            debug (boolean): Prints K, y and K dot y 
         """
         # Measurement prediction covariance
         S = np.dot(np.dot(self.H, self.P), self.H.T) + self.R
@@ -54,7 +55,19 @@ class KF:
         # Kalman gain
         K = np.dot(np.dot(self.P, self.H.T), s_inv) # Named L in the lecture notes
         # Measurement residual (innovation)
-        y = z - np.dot(self.H, self.x)   
+        y = z - np.dot(self.H, self.x) 
+        # Debugging 
+        if debug:
+            print("--- H dot x ---")
+            print(np.dot(self.H, self.x))
+            print("--- z ---")
+            print(z)
+            print("--- y ---")
+            print(y)
+            print("--- K ---")
+            print(K)
+            print("--- K dot y ---")
+            print(np.dot(K, y))
         # Updated state estimate
         if y.ndim == 1 and y.shape[0] == 1:
             a = K * y
