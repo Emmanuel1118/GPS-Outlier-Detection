@@ -55,7 +55,8 @@ class KF:
         # Kalman gain
         K = np.dot(np.dot(self.P, self.H.T), s_inv) # Named L in the lecture notes
         # Measurement residual (innovation)
-        y = z - np.dot(self.H, self.x) 
+        y = z - np.dot(self.H, self.x)
+        # np.sqrt(np.dot(np.dot(y.T, s_inv), y)/3) < 3 if true ignore measurment too unlikely
         # Debugging 
         if debug:
             print("--- H dot x ---")
