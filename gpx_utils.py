@@ -1,6 +1,8 @@
 import xml.etree.ElementTree as ET
 import numpy as np
 import matplotlib.pyplot as plt
+import plotly.graph_objects as go
+import pandas as pd
 
 def parse_gpx(file_path):
     tree = ET.parse(file_path)
@@ -91,6 +93,81 @@ def plot_track_ned(data_array): # curretlly basicaly the same as plot_track_lla
     plt.colorbar(scatter, label='Altitude (m)')
 
     plt.show()
+
+
+def interactive_plot_ned(data_array):
+    north = data_array[:, 0].astype(float)
+    east = data_array[:, 1].astype(float)
+    down = data_array[:, 2].astype(float)
+
+    # Create the 2D track plot
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(
+        x=east,
+        y=north,
+        mode='markers+lines',
+        marker=dict(
+            size=5,
+            color=down,  # Set color to the down values
+            colorscale='Viridis',  # Choose a colorscale
+            colorbar=dict(title='Height (Down)'),
+            showscale=True
+        ),
+        name='Track'
+    ))
+
+    # Set plot titles and labels
+    fig.update_layout(
+        title='2D Track Plot',
+        xaxis_title='East',
+        yaxis_title='North',
+        xaxis=dict(scaleanchor="y", scaleratio=1),  # Equal scaling for both axes
+        yaxis=dict(scaleanchor="x", scaleratio=1),
+        width=800,
+        height=800
+    )
+
+    # Show the plot
+    fig.show()
+
+
+def interactive_plot_lla(lla_coordinates, downsample_factor=1):
+    # Downsample data if downsample_factor is greater than 1
+    if downsample_factor > 1:
+        lla_coordinates = lla_coordinates[::downsample_factor]
+    
+    # Convert the array of arrays to a pandas DataFrame
+    df = pd.DataFrame(lla_coordinates, columns=['latitude', 'longitude', 'altitude', 'time'])
+    
+    # Create a scatter plot on a map using WebGL
+    fig = go.Figure()
+
+    fig.add_trace(go.Scattermapbox(
+        lat=df['latitude'],
+        lon=df['longitude'],
+        mode='markers',
+        marker=dict(
+            size=5,  # Adjust marker size for visibility and performance
+            color=df['altitude'],
+            colorscale='Viridis',
+            colorbar=dict(title='Altitude'),
+            showscale=True
+        )
+    ))
+
+    fig.update_layout(
+        title='LLA Track Plot',
+        mapbox=dict(
+            style="carto-positron",
+            zoom=3,
+            center={"lat": df['latitude'].mean(), "lon": df['longitude'].mean()}
+        ),
+        width=800,
+        height=800
+    )
+
+    fig.show()
 
 
 def lla2ned(data_array, lla0):
