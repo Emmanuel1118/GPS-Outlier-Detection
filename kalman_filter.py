@@ -56,7 +56,6 @@ class KF:
         K = np.dot(np.dot(self.P, self.H.T), s_inv) # Named L in the lecture notes
         # Measurement residual (innovation)
         y = z - np.dot(self.H, self.x)
-        # np.sqrt(np.dot(np.dot(y.T, s_inv), y)/3) < 3 if true ignore measurment too unlikely
         # Debugging 
         if debug:
             print("--- H dot x ---")
@@ -69,6 +68,13 @@ class KF:
             print(K)
             print("--- K dot y ---")
             print(np.dot(K, y))
+            print("--- sigma calculation ---")
+            print()
+        # Likely estimation of mesurments. If it is larger then 3*sigma of the measurment sigma then discard the measurment
+        if np.sqrt((np.dot(np.dot(y.T, s_inv), y).astype(float)) / 3) > 3:
+            self.x = self.x
+            self.P = self.P 
+            return
         # Updated state estimate
         if y.ndim == 1 and y.shape[0] == 1:
             a = K * y
