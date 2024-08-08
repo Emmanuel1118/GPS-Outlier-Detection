@@ -71,7 +71,7 @@ class KF:
             print("--- sigma calculation ---")
             print()
         # Likely estimation of mesurments. If it is larger then 3*sigma of the measurment sigma then discard the measurment
-        if np.sqrt((np.dot(np.dot(y.T, s_inv), y).astype(float)) / 3) > 3:
+        if np.sqrt((np.dot(np.dot(y.T, s_inv), y).astype(float)) / 3) > 6:
             self.x = self.x
             self.P = self.P 
             return
