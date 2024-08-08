@@ -69,12 +69,12 @@ class KF:
             print("--- K dot y ---")
             print(np.dot(K, y))
             print("--- sigma calculation ---")
-            print()
+            print(np.sqrt((np.dot(np.dot(y.T, s_inv), y).astype(float)) / 3))
         # Likely estimation of mesurments. If it is larger then 3*sigma of the measurment sigma then discard the measurment
-        if np.sqrt((np.dot(np.dot(y.T, s_inv), y).astype(float)) / 3) > 6:
+        if np.sqrt((np.dot(np.dot(y.T, s_inv), y).astype(float)) / 3) > 3:
             self.x = self.x
             self.P = self.P 
-            return
+            return 
         # Updated state estimate
         if y.ndim == 1 and y.shape[0] == 1:
             a = K * y
