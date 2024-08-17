@@ -266,3 +266,39 @@ def get_time_diff(data_array):
     diff = np.concatenate([[0], diff])
     
     return diff
+
+def simulate_gps_error(gpx_data, p, error_len=1):
+    """
+    Simulates GPS errors by replacing sections of the data with a specific error point.
+
+    Parameters:
+    gpx_data : np.ndarray
+        GPS data array (latitude, longitude, altitude).
+    p : float
+        Probability of introducing an error at each point.
+    error_len : int, optional
+        Length of the error (number of consecutive points to replace). Default is 1.
+
+    Returns:
+    error_record : np.ndarray
+        Modified GPS data with simulated errors.
+    """
+    error_point = np.array([33.8208, 35.4883, 0]) # Beirut Airport
+    error_record = gpx_data
+    skip_counter = 0
+
+    for i in range(len(error_record[:, 0]) - 1):
+
+        if skip_counter > 0:
+            # Decrease the skip counter and continue to the next iteration
+            skip_counter -= 1
+            continue
+
+        if np.random.rand() < p:
+            for j in range(error_len):
+                if i + j + 1 > len(error_record[:, 0]) - 1:
+                    break
+                error_record[i + j + 1, :3] = error_point
+            skip_counter = error_len - 1
+    
+    return error_record
