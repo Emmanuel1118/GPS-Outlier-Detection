@@ -108,3 +108,38 @@ class KF:
 
         self.F = F
         self.G = G
+
+
+
+def kf_3d(data, t_diff, kalman):
+
+    meas_update = np.zeros_like(data[:, :3])
+    time_update = np.zeros_like(data[:, :3])
+
+    for i in range(len(data[:, 0]) - 1):
+
+        t = t_diff[i+1]
+
+        F = np.array([[1, 0, 0, t, 0, 0],
+                      [0, 1, 0, 0, t, 0],
+                      [0, 0, 1, 0, 0, t],
+                      [0, 0, 0, 1, 0, 0],
+                      [0, 0, 0, 0, 1, 0],
+                      [0, 0, 0, 0, 0, 1]])
+        
+        G = np.array([[0.5 * t**2, 0, 0], 
+                      [0, 0.5 * t**2, 0], 
+                      [0, 0, 0.5 * t**2], 
+                      [t, 0, 0], 
+                      [0, t, 0], 
+                      [0, 0, t]])
+        
+        kalman.update_system(F, G)
+        
+        kalman.update(data[i, :3].reshape(3, 1))
+        meas_update[i, :] = kalman.current_state()[:3, :].reshape(3)
+
+        kalman.predict()
+        time_update[i, :] = kalman.current_state()[:3, :].reshape(3)
+
+    return meas_update, time_update
