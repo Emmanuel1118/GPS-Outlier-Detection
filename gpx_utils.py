@@ -284,7 +284,7 @@ def simulate_gps_error(gpx_data, p, error_len=1):
         Modified GPS data with simulated errors.
     """
     error_point = np.array([33.8208, 35.4883, 0]) # Beirut Airport
-    error_record = gpx_data
+    error_record = gpx_data.copy()
     skip_counter = 0
 
     for i in range(len(error_record[:, 0]) - 1):

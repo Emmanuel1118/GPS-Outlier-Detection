@@ -112,14 +112,40 @@ class KF:
 
 
 def kf_3d(data, t_diff, kalman):
+    """
+    Applies a 3D Kalman filter to the provided data.
 
+    Parameters:
+    -----------
+    data : np.ndarray
+        GPS data array (positions in 3D space).
+
+    t_diff : np.ndarray
+        Array of time differences between consecutive data points.
+
+    kalman : object
+        An instance of a Kalman filter class with methods `update_system()`, `update()`, and `predict()`.
+
+    Returns:
+    --------
+    meas_update : np.ndarray
+        Updated measurements after applying the Kalman filter.
+        
+    time_update : np.ndarray
+        Predicted states after the Kalman filter time update.
+    """
+    
+    # Initialize arrays to store measurement and time updates
     meas_update = np.zeros_like(data[:, :3])
     time_update = np.zeros_like(data[:, :3])
 
+    # Iterate through the data points, except the last one
     for i in range(len(data[:, 0]) - 1):
 
-        t = t_diff[i+1]
+        # Time difference for the current step
+        t = t_diff[i + 1]
 
+        # Define the system dynamics matrix F and control matrix G based on time difference
         F = np.array([[1, 0, 0, t, 0, 0],
                       [0, 1, 0, 0, t, 0],
                       [0, 0, 1, 0, 0, t],
@@ -134,11 +160,14 @@ def kf_3d(data, t_diff, kalman):
                       [0, t, 0], 
                       [0, 0, t]])
         
+        # Update the Kalman filter with the new system matrices
         kalman.update_system(F, G)
         
+        # Perform the measurement update using the current data point
         kalman.update(data[i, :3].reshape(3, 1))
         meas_update[i, :] = kalman.current_state()[:3, :].reshape(3)
 
+        # Predict the next state and store the time update
         kalman.predict()
         time_update[i, :] = kalman.current_state()[:3, :].reshape(3)
 
