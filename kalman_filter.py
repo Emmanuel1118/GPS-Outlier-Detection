@@ -133,11 +133,19 @@ def kf_3d(data, t_diff, kalman):
         
     time_update : np.ndarray
         Predicted states after the Kalman filter time update.
+
+    meas_velocity : np.ndarray
+        Updated velocities after applying the Kalman filter.
+
+    time_velocity : np.ndarray
+        Predicted velocities after the Kalman filter time update.
     """
     
-    # Initialize arrays to store measurement and time updates
+    # Initialize arrays to store measurement and time updates and velocities
     meas_update = np.zeros_like(data[:, :3])
     time_update = np.zeros_like(data[:, :3])
+    meas_velocity = np.zeros_like(data[:, :3])
+    time_velocity = np.zeros_like(data[:, :3])
 
     # Iterate through the data points, except the last one
     for i in range(len(data[:, 0]) - 1):
@@ -166,9 +174,11 @@ def kf_3d(data, t_diff, kalman):
         # Perform the measurement update using the current data point
         kalman.update(data[i, :3].reshape(3, 1))
         meas_update[i, :] = kalman.current_state()[:3, :].reshape(3)
+        meas_velocity[i, :] = kalman.current_state()[3:, :].reshape(3)
 
         # Predict the next state and store the time update
         kalman.predict()
         time_update[i, :] = kalman.current_state()[:3, :].reshape(3)
+        time_velocity[i, :] = kalman.current_state()[3:, :].reshape(3)
 
-    return meas_update, time_update
+    return meas_update, time_update, meas_velocity, time_velocity
