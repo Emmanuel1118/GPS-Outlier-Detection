@@ -398,3 +398,28 @@ def plot_ned_velocity(velocity, time_stamps):
     # Adjust layout and display the plot
     plt.tight_layout()
     plt.show()
+
+
+def avg_discard_distance(data, discard_ind):
+    """
+    Calculate the average distance between consecutive data points, considering only the discarded points.
+
+    Parameters:
+    data : np.array
+        A 2D array where each row represents a point in space (e.g., NED coordinates or other vectors).
+    discard_ind : np.array or list
+        A 1D boolean array or list indicating which points are considered 'discarded' (1 for discarded, 0 for kept).
+
+    Returns:
+    avg_distance : float
+        The average Euclidean distance between consecutive discarded data points.
+    """
+       
+    norm = sum(discard_ind)
+    print(norm)
+    summ = 0
+    for i in range(len(discard_ind)):
+        if i:
+            summ = summ + np.linalg.norm(data[i, :] - data[i-1, :])
+        
+    return summ / norm
