@@ -243,6 +243,26 @@ def ned2lla(data_array_ned, lla0):
     lla = np.column_stack((lat, lon, alt, data_array_ned[:, 3]))
     return lla
 
+
+def get_time(ned_data):
+    """
+    Extract and normalize time from the NED data.
+
+    Parameters:
+    ned_data : np.array
+        A 2D array where each row contains NED coordinates (North, East, Down) and a timestamp.
+
+    Returns:
+    time : np.array
+        A 1D array containing the normalized time (in seconds), starting from zero.
+    """
+
+    time = ned_data[:, 3].astype('datetime64[s]').astype(int)
+    time = time - time[0]
+
+    return time
+
+
 def get_time_diff(data_array):
     """
     Calculate time differences between consecutive timestamps.
@@ -257,7 +277,7 @@ def get_time_diff(data_array):
     time_diffs = get_time_diff(data_array)
     """
     # Convert the 4th column of data_array to datetime64 in seconds, then to integer timestamps
-    t = data_array[:, 3].astype('datetime64[s]').astype(int)
+    t = get_time(data_array)
     
     # Compute the difference between consecutive timestamps
     diff = np.diff(t)
@@ -266,6 +286,7 @@ def get_time_diff(data_array):
     diff = np.concatenate([[0], diff])
     
     return diff
+
 
 def simulate_gps_error(gpx_data, p, error_len=1):
     """
@@ -302,3 +323,78 @@ def simulate_gps_error(gpx_data, p, error_len=1):
             skip_counter = error_len - 1
     
     return error_record
+
+
+def calc_ned_velocity(ned_data):
+
+    """
+    Calculate the velocity in the NED (North, East, Down) coordinate frame from position data.
+
+    Parameters:
+    ned_data : np.array
+        A 2D array where each row contains the NED coordinates (North, East, Down) and a timestamp.
+
+    Returns:
+    ned_velocity : np.array
+        A 2D array where each row contains the velocity components (North, East, Down) calculated 
+        from the position data, with the same number of rows as ned_data.
+    """
+    ned_velocity = np.zeros([len(ned_data[:, 0]), 3])
+    t_diff = get_time_diff(ned_data) # gets the time diffrence between each point
+
+    for i in range(len(ned_data[:, 0]) - 1):
+
+        if t_diff[i+1] == 0:
+            if i != 0:
+                ned_velocity[i, :] = ned_velocity[i-1, :]
+        
+        else:
+            ned_velocity[i, :] = (ned_data[i+1, :3] - ned_data[i, :3]) / t_diff[i+1]
+    
+    return ned_velocity
+
+
+def plot_ned_velocity(velocity, time_stamps):
+    """
+    Plot the NED (North, East, Down) velocity components over time.
+
+    Parameters:
+    velocity : np.array
+        A 2D array where each row contains the velocity components (North, East, Down) over time.
+    time_stamps : np.array
+        A 1D array containing the timestamps corresponding to the velocity data.
+    """
+    
+    # Extract North, East, and Down components of the velocity
+    north_velocity = velocity[:, 0]
+    east_velocity = velocity[:, 1]
+    down_velocity = velocity[:, 2]
+
+    # Create a new figure
+    plt.figure(figsize=(10, 6))
+    
+    # Plot the North velocity component
+    plt.subplot(3, 1, 1)
+    plt.plot(time_stamps, north_velocity, label='North Velocity', color='b')
+    plt.ylabel('Velocity (m/s)')
+    plt.title('North Velocity')
+    plt.grid(True)
+
+    # Plot the East velocity component
+    plt.subplot(3, 1, 2)
+    plt.plot(time_stamps, east_velocity, label='East Velocity', color='g')
+    plt.ylabel('Velocity (m/s)')
+    plt.title('East Velocity')
+    plt.grid(True)
+
+    # Plot the Down velocity component
+    plt.subplot(3, 1, 3)
+    plt.plot(time_stamps, down_velocity, label='Down Velocity', color='r')
+    plt.ylabel('Velocity (m/s)')
+    plt.title('Down Velocity')
+    plt.xlabel('Time (s)')
+    plt.grid(True)
+
+    # Adjust layout and display the plot
+    plt.tight_layout()
+    plt.show()
