@@ -416,10 +416,13 @@ def avg_discard_distance(data, discard_ind):
     """
        
     norm = sum(discard_ind)
-    print(norm)
     summ = 0
     for i in range(len(discard_ind)):
         if i:
             summ = summ + np.linalg.norm(data[i, :] - data[i-1, :])
         
     return summ / norm
+
+
+def is_success_kalman(ned_data):
+    return np.max(np.abs(ned_data)) < 100000
