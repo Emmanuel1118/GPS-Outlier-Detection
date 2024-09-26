@@ -356,7 +356,7 @@ def calc_ned_velocity(ned_data):
 
 def plot_ned_velocity(velocity, time_stamps):
     """
-    Plot the NED (North, East, Down) velocity components over time.
+    Plot the magnitude of the NED (North, East, Down) velocity over time.
 
     Parameters:
     velocity : np.array
@@ -365,37 +365,20 @@ def plot_ned_velocity(velocity, time_stamps):
         A 1D array containing the timestamps corresponding to the velocity data.
     """
     
-    # Extract North, East, and Down components of the velocity
-    north_velocity = velocity[:, 0]
-    east_velocity = velocity[:, 1]
-    down_velocity = velocity[:, 2]
+    # Calculate the velocity magnitude using np.linalg.norm
+    velocity_magnitude = np.linalg.norm(velocity, axis=1)
 
     # Create a new figure
     plt.figure(figsize=(10, 6))
     
-    # Plot the North velocity component
-    plt.subplot(3, 1, 1)
-    plt.plot(time_stamps, north_velocity, label='North Velocity', color='b')
-    plt.ylabel('Velocity (m/s)')
-    plt.title('North Velocity')
-    plt.grid(True)
-
-    # Plot the East velocity component
-    plt.subplot(3, 1, 2)
-    plt.plot(time_stamps, east_velocity, label='East Velocity', color='g')
-    plt.ylabel('Velocity (m/s)')
-    plt.title('East Velocity')
-    plt.grid(True)
-
-    # Plot the Down velocity component
-    plt.subplot(3, 1, 3)
-    plt.plot(time_stamps, down_velocity, label='Down Velocity', color='r')
-    plt.ylabel('Velocity (m/s)')
-    plt.title('Down Velocity')
+    # Plot the velocity magnitude
+    plt.plot(time_stamps, velocity_magnitude, label='Velocity Magnitude', color='b')
+    plt.ylabel('Velocity Magnitude (m/s)')
+    plt.title('Velocity Magnitude Over Time')
     plt.xlabel('Time (s)')
     plt.grid(True)
 
-    # Adjust layout and display the plot
+    # Display the plot
     plt.tight_layout()
     plt.show()
 
